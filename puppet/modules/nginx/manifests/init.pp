@@ -1,5 +1,11 @@
 # vagrant/puppet/modules/nginx/manifests/init.pp
 class nginx {
+  ## make sure '/vagrant/app/' exists.
+  ## Otherwise, recreate. This is where
+  ## Dev/Test Team's test their respective nginx apps
+  file { '/vagrant/app':
+     ensure=>'directory',
+  }
 
   # Symlink /var/www/app on our guest with 
   # host /path/to/vagrant/app on our system
