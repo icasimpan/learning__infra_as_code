@@ -1,32 +1,26 @@
 class other_deps {
-  include other_deps::install, other_deps::config, other_deps::service
-}
-
-class other_deps::install {
+  Package { ensure => "installed" }
   
-  ### Install the other dependencies
-  package { 'ImageMagick':
-    ensure => present,
-  }  
-  package { 'libxml2':
-    ensure => present,
-  }  
-  package { 'libpq-dev':
-    ensure => present,
-  }  
-  package { 'g++':
-    ensure => present,
-  }  
-  package { 'make':
-    ensure => present,
-  }  
+  $other_deps_list = [ 
+			'ImageMagick',
+			'libxml2', 
+			'libpq-dev',
+			'g++',
+			'make',
+                        'git-core',
+                        'curl',
+                        'zlib1g-dev',
+                        'build-essential',
+                        'libssl-dev',
+                        'libreadline-dev',
+                        'libyaml-dev',
+                        'libsqlite3-dev', 
+                        'sqlite3',
+                        'libxml2-dev', 
+                        'libxslt1-dev',
+                        'libcurl4-openssl-dev',
+                        'python-software-properties',
+                        'libffi-dev',
+                      ]
+  package { $other_deps_list: }
 }
-
-class other_deps::config {
-}
-
-class other_deps::service {
-
-}
-
-Class["other_deps::install"] -> Class["other_deps::config"] -> Class["other_deps::service"]
