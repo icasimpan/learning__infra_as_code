@@ -31,7 +31,15 @@ class nginx {
     path => '/etc/nginx/sites-available/127.0.0.1',
     ensure => file,
     require => Package['nginx'],
-      source => 'puppet:///modules/nginx/127.0.0.1',
+    source => 'puppet:///modules/nginx/127.0.0.1',
+  }
+
+  # Add upstream config
+  file { 'vagrant-nginx-upstream':
+    path => '/etc/nginx/conf.d/upstream.conf',
+    ensure => file,
+    require => Package['nginx'],
+    source => 'puppet:///modules/nginx/upstream',
   }
 
   # Disable the default nginx vhost
