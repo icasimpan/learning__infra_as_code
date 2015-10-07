@@ -8,4 +8,6 @@ Vagrant.configure(2) do |config|
     puppet.module_path = 'puppet/modules'
    puppet.manifest_file = 'init.pp'
   end
+### TODO: Work on shell provisioning as it's not yet working...
+#   config.vm.provision "shell", path: "vagrant_provision.sh"
 end

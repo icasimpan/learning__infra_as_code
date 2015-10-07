@@ -1,0 +1,1 @@
+puppet apply /vagrant/puppet/manifests/init.pp
