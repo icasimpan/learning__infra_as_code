@@ -1,1 +1,1 @@
-puppet apply /vagrant/puppet/manifests/init.pp
+puppet apply /vagrant/puppet/manifests/init.pp --modulepath=/vagrant/puppet/modules
