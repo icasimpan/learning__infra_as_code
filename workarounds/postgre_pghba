@@ -1,0 +1,22 @@
+#!/bin/bash
+
+## WORKAROUND JUSTIFICATION: Needed for now as I can't seem to
+##    figure out how to copy a template 'pg_hba.conf' as 'posgres'
+##    workaround below does not work as well:
+
+#  # replace pg_hba.conf with needed createdb permission for 'vagrant'
+#  exec { '/etc/postgresql/9.3/main/pg_hba.conf':
+#    command => 'sudo /bin/cp /vagrant/puppet/modules/postgres/files/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf',
+#    user => 'root',
+#  }
+#
+#  file { '/etc/postgresql/9.3/main/pg_hba.conf':
+#    ensure => present,
+#    owner => postgres,
+#  }
+
+sudo -u postgres /bin/cp /vagrant/puppet/modules/postgres/files/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+
+## send proper exit code '0' if above line is successful
+## needed so as NOT TO FAIL 'puppet'
+[[ $? -eq 0 ]] && exit 0
