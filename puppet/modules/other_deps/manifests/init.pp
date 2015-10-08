@@ -21,6 +21,13 @@ class other_deps {
                         'libcurl4-openssl-dev',
                         'python-software-properties',
                         'libffi-dev',
+                        'vim',
+                        'expect',
+                        'debconf-utils',
+                        'build-essential',
+                        'zlib1g-dev',
+                        'libreadline6-dev',
+                        'libpcre3',
                       ]
   package { $other_deps_list: }
 }
