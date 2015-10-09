@@ -8,7 +8,7 @@
 ## make sure 'vagrant' role still DOES NOT exist yet...
 user_exist=$(psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='vagrant'")
 if [[ "$user_exist" = "" ]]; then
-  sudo -u postgres /usr/bin/createuser vagrant --createdb
+  sudo -u postgres /usr/bin/createuser vagrant --createdb -s
 
   ## send proper exit code '0' if above line is successful
   ## needed so as NOT TO FAIL 'puppet'
