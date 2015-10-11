@@ -3,9 +3,14 @@ class postgres {
 }
 
 class postgres::install {
-  package { 'postgresql':
-    ensure => present
-  }  
+  Package { ensure => "installed" }
+  $pg_deps_list = [
+                    'postgresql',
+                    'libpq-dev',
+                    'postgresql-contrib-9.3',
+                    'postgresql-server-dev-9.3',
+                  ]
+  package { $pg_deps_list: }
 }
 
 class postgres::config {
