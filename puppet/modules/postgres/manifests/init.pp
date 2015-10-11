@@ -12,15 +12,16 @@ class postgres::config {
   ## replace pg_hba.conf with needed createdb permission for 'vagrant'
   ## NOTE: Using workaround
   exec { 'role_vagrant':
-    command => '/vagrant/workarounds/postgre_pghba',
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/pghba_copy.pp',
   }
 
   ##
   ## Add 'createdb' permission for 'vagrant'
-  ##   --> sudo -u postgres createuser vagrant --createdb
+  ##   --> sudo -u postgres createuser vagrant -s
   ## NOTE: Using workaround
   exec { 'sudo_createuser':
-    command => '/vagrant/workarounds/postgre_createdb',
+    #command => '/vagrant/puppet/_workarounds/postgres_createdb.sh',
+	command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/createdb_superuser_vagrant.pp',
   }
 }
 
