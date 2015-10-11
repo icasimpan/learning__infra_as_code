@@ -1,11 +1,5 @@
 class ruby {
-  exec { "install_ruby_223":
-    command => "rbenv install 2.2.3",
-    path    => '/usr/local/rbenv/bin',
-  }
-
-  exec { "global_ruby_223":
-    command => "rbenv global 2.2.3",
-    path    => '/usr/local/rbenv/bin',
+  exec { 'append_etc_bash.bashrc':
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/append__etc_bash.bashrc  --modulepath=/vagrant/puppet/modules',
   }
 }
