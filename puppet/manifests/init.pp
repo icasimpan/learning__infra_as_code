@@ -14,4 +14,3 @@ include nginx
 include redis
 include postgres
 include other_deps
-include rbenv
