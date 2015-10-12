@@ -49,21 +49,25 @@ class ruby {
   exec { 'rvm_install__libyaml':
     environment => ['HOME=/home/vagrant'],
     command => '/home/vagrant/.rvm/bin/rvm pkg install libyaml',
+    require => Exec['rvm_installer_run'],
   }
 
   exec { 'rvm_reinstall_all':
     environment => ['HOME=/home/vagrant'],
     command => '/home/vagrant/.rvm/bin/rvm reinstall all --force',
+    require => Exec['rvm_installer_run'],
   }
 
   exec { 'rvm_install_turbo':
     environment => ['HOME=/home/vagrant'],
     command => '/home/vagrant/.rvm/bin/rvm install 2.0.0-turbo',
+    require => Exec['rvm_installer_run'],
   }
 
   exec { 'rvm_use_turbo':
     environment => ['HOME=/home/vagrant'],
     command => '/home/vagrant/.rvm/bin/rvm use 2.0.0-turbo --default',
+    require => Exec['rvm_installer_run'],
   }
 
   include stdlib
