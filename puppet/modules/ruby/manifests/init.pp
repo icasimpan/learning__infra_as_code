@@ -30,4 +30,9 @@ class ruby {
                         'git',
             ]
   package { $ruby_deps_list: }
+
+  ## run rvm-installer
+  exec { 'rvm_installer_run':
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/rvm_install.pp',
+  }
 }
