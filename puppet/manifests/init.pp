@@ -14,3 +14,4 @@ include nginx
 include redis
 include postgres
 include ruby
+include discourse
