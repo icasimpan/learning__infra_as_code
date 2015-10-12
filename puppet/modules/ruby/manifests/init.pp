@@ -35,4 +35,15 @@ class ruby {
   exec { 'rvm_installer_run':
     command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/rvm_install.pp',
   }
+
+  ## create 'rvm' group
+  group { 'rvm':
+    ensure => 'present',
+  }
+
+  ## make 'vagrant' part of 'rvm' group
+  user { 'vagrant':
+    ensure => 'present',
+    groups => 'rvm',
+  }
 }
