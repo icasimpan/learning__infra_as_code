@@ -1,9 +1,5 @@
 class ruby {
-  include stdlib
-  ## added locale settings 
-  exec { 'append_etc_bash.bashrc':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/append__etc_bash.bashrc  --modulepath=/vagrant/puppet/modules',
-  }
+  include stdlib ## needed for 'file_line'
 
   ## dependencies in ruby
   Package { ensure => "installed" }
@@ -32,6 +28,11 @@ class ruby {
                         'git',
             ]
   package { $ruby_deps_list: }
+
+  ## added locale settings 
+  exec { 'append_etc_bash.bashrc':
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/append__etc_bash.bashrc  --modulepath=/vagrant/puppet/modules',
+  }
 
   ## run rvm-installer
   exec { 'rvm_installer_run':
@@ -98,8 +99,11 @@ class ruby {
   }->
   file_line { 'no_docu_home_gemrc':
     path => '/home/vagrant/.gemrc',
-    line => 'gem: --no-document',
-    match => '^gem:\ --no-document$',
+    line => 'gem: --no-ri --no-rdoc',
+    match => '^gem:\ --no-ri\ --no-rdoc$',
+  }->
+  exec { 'change_owner_homegemrc':
+    command => '/bin/chown -R vagrant:rvm /home/vagrant/.gemrc',
   }->
   exec { 'install_bundler':
     command => 'gem install bundler',
