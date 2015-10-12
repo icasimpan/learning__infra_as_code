@@ -25,8 +25,14 @@ class postgres::config {
   ##   --> sudo -u postgres createuser vagrant -s
   ## NOTE: Using workaround
   exec { 'sudo_createuser':
-    #command => '/vagrant/puppet/_workarounds/postgres_createdb.sh',
-	command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/createdb_superuser_vagrant.pp',
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/createdb_superuser_vagrant.pp',
+  }
+
+  ## 
+  ## Prepare postgres for discourse installation later..
+  ## 
+  exec { 'preparation_discourse_install':
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/prepare_discourse.pp',
   }
 }
 
