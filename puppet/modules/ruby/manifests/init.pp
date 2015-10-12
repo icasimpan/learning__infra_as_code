@@ -45,4 +45,41 @@ class ruby {
     ensure => 'present',
     groups => 'rvm',
   }
+
+  exec { 'rvm_install__libyaml':
+    environment => ['HOME=/home/vagrant'],
+    command => '/home/vagrant/.rvm/bin/rvm pkg install libyaml',
+  }
+
+  exec { 'rvm_reinstall_all':
+    environment => ['HOME=/home/vagrant'],
+    command => '/home/vagrant/.rvm/bin/rvm reinstall all --force',
+  }
+
+  exec { 'rvm_install_turbo':
+    environment => ['HOME=/home/vagrant'],
+    command => '/home/vagrant/.rvm/bin/rvm install 2.0.0-turbo',
+  }
+
+  exec { 'rvm_use_turbo':
+    environment => ['HOME=/home/vagrant'],
+    command => '/home/vagrant/.rvm/bin/rvm use 2.0.0-turbo --default',
+  }
+
+  include stdlib
+
+  file { '/home/vagrant/.gemrc':
+    ensure => 'present',
+  }->
+  file_line { 'no_docu_home_gemrc':
+    path => '/home/vagrant/.gemrc',
+    line => 'gem: --no-document',
+    match => '^gem:\ --no-document$',
+  }
+
+  ## run rvm-installer
+  exec { 'global_gemrc_writer':
+    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/global_gemrc.pp --modulepath=/vagrant/puppet/modules/',
+  }
+
 }
