@@ -25,7 +25,6 @@ class ruby {
                         'pkg-config',
                         'curl',
                         'build-essential',
-                        'git',
             ]
   package { $ruby_deps_list: }
 
