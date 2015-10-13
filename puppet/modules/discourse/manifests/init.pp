@@ -17,6 +17,13 @@ class discourse {
     command => '/bin/chown -R vagrant:rvm /opt/discourse',
     tries   => '5',
   }
+
+  ## gem install bundle --install-dir /home/vagrant/.rvm/gems/ruby-2.2.3
+  exec { 'install_gem_bundle':
+    command  => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/discourse/_workaround/final_steps.pp',
+    creates  => '/home/vagrant/.rvm/gems/ruby-2.2.3/bin/bundle',
+    tries    => '5',
+  }
   
   ##
   ## TODO:
