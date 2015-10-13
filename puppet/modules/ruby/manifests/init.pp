@@ -104,6 +104,7 @@ class ruby {
   }->
   exec { 'change_owner_homegemrc':
     command => '/bin/chown -R vagrant:rvm /home/vagrant/.gemrc',
+    require => Group['rvm'],
   }->
   exec { 'install_bundler':
     command => 'gem install bundler',
