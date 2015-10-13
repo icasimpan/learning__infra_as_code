@@ -70,6 +70,7 @@ class ruby {
     environment => ['HOME=/home/vagrant'],
     command => '/home/vagrant/.rvm/bin/rvm install 2.2.3',
     require => Exec['rvm_installer_run'],
+    timeout => '0',
   }->
   exec { 'ensure_rvmdir_correct_ownership02':
     command => '/bin/chown -R vagrant:rvm /home/vagrant/.rvm',
