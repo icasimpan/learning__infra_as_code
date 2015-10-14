@@ -1,0 +1,63 @@
+Rough notes/installation from source (as rvm & rbenv way is a bit tricky/challenging to automate via puppet)
+
+Existing Vagrantfile (with ruby & discourse commmented out from /vagrant/puppet/manifests/init.pp) + the steps
+below (1-5 should give you a working discourse @eth1 IP)
+
+
+1. execute modules/ruby/manifests/init.pp part that runs dependencies for ruby
+	---> install 'git' also
+
+2. Run the source install of ruby
+	cd
+	wget http://ftp.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz
+	tar -xzvf ruby-2.2.3.tar.gz
+	cd ruby-2.2.3/
+	./configure --disable-install-rdoc 
+	make 
+	sudo make install 
+	ruby -v 
+
+	echo "gem: --no-ri --no-rdoc" > ~/.gemrc
+
+	sudo chmod o+w -R /usr/local/lib/ruby/gems/2.2.0/ ----> workaround (for `gem install bundler')
+	sudo chmod o+w /usr/local/bin
+
+	gem install bundler (successful with workarounds) 
+
+3. Install rails
+	gem install rails -v 4.2.4
+
+4. Install discourse
+	#sudo apt-get install git
+	sudo mkdir /opt/discourse
+	sudo chown vagrant:vagrant /opt/discourse
+ 	git clone https://github.com/discourse/discourse.git /opt/discourse 
+
+	
+	cd /opt/discourse/app
+	bundle install  (started 3:47 - 4:01 => 14mins)  
+
+	bundle exec rake db:create db:migrate db:test:prepare <<<< current
+
+
+	## now, reverse the workaround for installation...
+	sudo chmod o-w -R /usr/local/lib/ruby/gems/2.2.0/ ----> workaround (for `gem install bundler')
+	sudo chmod o-w /usr/local/bin
+
+
+5. DAEMONIZE
+      cp /vagrant/puppet/modules/discourse/file/discourse.conf /etc/init
+
+
+
+
+NOTE: /vagrant/puppet/modules/ruby/_workaround/global_gemrc.pp ---> may no longer be needed as above steps
+      went fine without having an /etc/gemrc
+
+
+
+EXPERIMENTAL:
+
+	=====> install 'mailcatcher' via `gem install mailcatcher' but, enable the workaround first
+	sudo chmod o+w -R /usr/local/lib/ruby/gems/2.2.0/ 
+	sudo chmod o+w /usr/local/bin
