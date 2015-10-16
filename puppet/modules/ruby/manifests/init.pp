@@ -47,85 +47,58 @@ class ruby {
     command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/append__etc_bash.bashrc  --modulepath=/vagrant/puppet/modules',
   }
 
-  ## run rvm-installer
-  #exec { 'rvm_installer_run':
-  #  command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/rvm_install.pp',
-  #}
-
-  ## create 'rvm' group ...
-  ## and make 'vagrant' part of 'rvm' group
-  #group { 'rvm':
-  #  ensure => 'present',
-  #}->
-  #user { 'vagrant':
-  #  ensure => 'present',
-  #  groups => 'rvm',
-  #}
-
-  #exec { 'rvm_install__libyaml':
-  #  environment => ['HOME=/home/vagrant'],
-  #  command => '/home/vagrant/.rvm/bin/rvm pkg install libyaml',
-  #  require => Exec['rvm_installer_run'],
-  #}->
-  #exec { 'ensure_rvmdir_correct_ownership00':
-  #  command => '/bin/chown -R vagrant:rvm /home/vagrant/.rvm',
-  #}
-
-  #exec { 'rvm_reinstall_all':
-  #  environment => ['HOME=/home/vagrant'],
-  #  command => '/home/vagrant/.rvm/bin/rvm reinstall all --force',
-  #  require => Exec['rvm_installer_run'],
-  #}->
-  #exec { 'ensure_rvmdir_correct_ownership01':
-  #  command => '/bin/chown -R vagrant:rvm /home/vagrant/.rvm',
-  #}
-
-  #exec { 'rvm_install_223':
-  #  environment => ['HOME=/home/vagrant'],
-  #  command => '/home/vagrant/.rvm/bin/rvm install 2.2.3',
-  #  require => Exec['rvm_installer_run'],
-  #  timeout => '0',
-  #}->
-  #exec { 'ensure_rvmdir_correct_ownership02':
-  #  command => '/bin/chown -R vagrant:rvm /home/vagrant/.rvm',
-  #}
-
-  #exec { 'rvm_use_223':
-  #  environment => ['HOME=/home/vagrant'],
-  #  command => 'rvm use 2.2.3 --default',
-  #  path => ['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/home/vagrant/.rvm/bin', '/home/vagrant/.rvm/bin'],
-  #  require => Exec['rvm_installer_run'],
-  #}->
-  #exec { 'ensure_rvmdir_correct_ownership03':
-  #  command => '/bin/chown -R vagrant:rvm /home/vagrant/.rvm',
-  #}-> 
-  #file { '/home/vagrant/.bash_profile':
-  #  ensure => 'present',
-  #}->
-  #file_line { 'write_rvm_default_homebashrc':
-  #  path  => '/home/vagrant/.bash_profile',
-  #  line  => 'rvm use 2.2.3 --default',
-  #  match => '^rvm\ use\ 2\.2\.3*',
-  #}
-
-  file { '/home/vagrant/.gemrc':
-    ensure => 'present',
+  ## download
+  exec { 'get_ruby223_source':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/bin/wget http://ftp.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz'",
+    cwd     => '/home/vagrant',
+    creates => '/home/vagrant/ruby-2.2.3.tar.gz',
   }->
-  file_line { 'no_docu_home_gemrc':
-    path => '/home/vagrant/.gemrc',
-    line => 'gem: --no-ri --no-rdoc',
-    match => '^gem:\ --no-ri\ --no-rdoc$',
+  ## unpack
+  exec { 'untar_ruby223':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/bin/tar -xzvf /home/vagrant/ruby-2.2.3.tar.gz'",
+    cwd     => '/home/vagrant',
+    creates => '/home/vagrant/ruby-2.2.3/CONTRIBUTING.md',
   }->
-  exec { 'change_owner_homegemrc':
-    command => '/bin/chown -R vagrant:vagrant /home/vagrant/.gemrc',
+  ## cd; ./configure --disable-install-rdoc
+  exec { 'configure_ruby223':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/home/vagrant/ruby-2.2.3/configure --disable-install-rdoc'",
+    cwd     => '/home/vagrant/ruby-2.2.3',
+    creates => '/home/vagrant/ruby-2.2.3/Makefile',
   }->
-  exec { 'install_bundler':
-    command => 'gem install bundler',
-  #  path => ['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/home/vagrant/.rvm/bin', '/home/vagrant/.rvm/bin'],
+  ## make
+  exec { 'make_ruby223':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/bin/make -f /home/vagrant/ruby-2.2.3/Makefile'",
+    cwd     => '/home/vagrant/ruby-2.2.3',
+  }->
+  ## sudo make install
+  exec { 'sudo_make_install':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/bin/sudo /usr/bin/make install'",
+    cwd     => '/home/vagrant/ruby-2.2.3',
+    creates => '/usr/local/bin/ruby',
+  }->
+
+  ## -----------------------------
+  ## install 'gem install bundler'
+  ## -----------------------------
+  exec { 'temp_tweak_permission_for_gem01':
+    command => '/usr/bin/sudo /bin/chmod o+w -R /usr/local/lib/ruby/gems/2.2.0/',
+  }->
+  exec { 'temp_tweak_permission_for_gem02':
+    command => '/usr/bin/sudo /bin/chmod o+w /usr/local/bin',
+  }->
+  exec { 'gem_install_bundler':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/local/bin/gem install bundler'",
+  }->
+
+  ## -----------------------------
+  ## install rails
+  ## -----------------------------
+  exec { 'gem_install_rails':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/local/bin/gem install rails -v 4.2.4'",
+    timeout => '0',
   }
 
-  ## run rvm-installer
-  exec { 'global_gemrc_writer':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/global_gemrc.pp --modulepath=/vagrant/puppet/modules/',
-  }
 }
+
+#Class['ruby']->Class['discourse']
+
