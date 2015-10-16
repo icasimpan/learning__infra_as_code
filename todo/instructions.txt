@@ -1,3 +1,27 @@
+PRE-INTEGRATION STEPS:
+ 1. In /vagrant/puppet/manifests/init.pp, disable the two lines:
+	include ruby
+	include discourse
+ 2. Run the following pre-integration puppet scripts:
+	* sudo puppet apply -d 00-install_dependencies.pp
+        * puppet apply -d 01-install_ruby_source.pp
+        * puppet apply -d 02-install_bundler.pp
+        * puppet apply -d 03-install_rails.pp
+        * sudo puppet apply -d 04-install_discourse.pp
+        * puppet apply -d 05-config-discourse.pp
+        * puppet apply -d 06-discourse_dbseeding.pp
+ 3. In /opt/discourse/app, run:
+	rails server
+
+ 4. Access http://<eth1_ip_here>/
+
+
+
+
+
+
+
+
 Rough notes/installation from source (as rvm & rbenv way is a bit tricky/challenging to automate via puppet)
 
 Existing Vagrantfile (with ruby & discourse commmented out from /vagrant/puppet/manifests/init.pp) + the steps
