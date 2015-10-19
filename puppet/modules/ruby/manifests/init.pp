@@ -40,13 +40,11 @@ class ruby {
                         'zlib1g-dev',
                         'libssl-dev',
             ]
-  package { $ruby_deps_list: }
-
+  package { $ruby_deps_list: }->
   ## added locale settings 
   exec { 'append_etc_bash.bashrc':
     command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/ruby/_workaround/append__etc_bash.bashrc  --modulepath=/vagrant/puppet/modules',
-  }
-
+  }->
   ## download
   exec { 'get_ruby223_source':
     command => "/usr/bin/sudo /bin/su vagrant -c '/usr/bin/wget http://ftp.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz'",
@@ -97,8 +95,4 @@ class ruby {
     command => "/usr/bin/sudo /bin/su vagrant -c '/usr/local/bin/gem install rails -v 4.2.4'",
     timeout => '0',
   }
-
 }
-
-#Class['ruby']->Class['discourse']
-
