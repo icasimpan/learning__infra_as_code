@@ -1,18 +1,9 @@
 # vagrant/puppet/modules/nginx/manifests/init.pp
 class nginx {
-  ## make sure '/vagrant/app/' exists.
-  ## Otherwise, recreate. This is where
-  ## Dev/Test Team's test their respective nginx apps
-  file { '/vagrant/app':
-     ensure=>'directory',
-  }
-
-  # Symlink /var/www/app on our guest with 
-  # host /path/to/vagrant/app on our system
-  file { '/var/www/app':
-    ensure  => 'link',
-    target  => '/vagrant/app',
-  }
+  # make sure default htmldoc for nginx is present
+  file { '/var/www':
+    ensure => 'directory',
+  }->
 
   # Install the nginx package. This relies on apt-get update
   package { 'nginx':

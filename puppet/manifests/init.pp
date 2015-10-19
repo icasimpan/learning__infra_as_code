@@ -1,17 +1,8 @@
-exec { 'apt-get update':
-  path => '/usr/bin',
-}
-
-package { 'vim':
-  ensure => present,
-}
-
-file { '/var/www':
-  ensure => 'directory',
-}
-
 include nginx
 include redis
 include postgres
 include ruby
 include discourse
+
+### explicitly stated module loading sequence by puppet
+Class['nginx']->Class['redis']->Class['postgres']->Class['ruby']->Class['discourse']
