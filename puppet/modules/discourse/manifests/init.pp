@@ -24,7 +24,7 @@ class discourse {
   }->
   exec { 'bundle_install_discourse':
     command => "/usr/bin/sudo /bin/su vagrant -c '/usr/local/bin/bundle install'",
-    cwd     => "/opt/discourse",
+    cwd     => "/opt/discourse/app",
     tries   => '5',
     timeout => '0',
   }->
@@ -40,5 +40,19 @@ class discourse {
   }->
   exec {'set_basic_upstart_config':
     command => "/usr/bin/sudo /bin/cp /vagrant/puppet/modules/discourse/files/discourse.conf /etc/init/",
+  }->
+  exec {'chmod_discourse_upstart_config':
+    command => "/usr/bin/sudo /bin/chmod ugo-x /etc/init/discourse.conf",
+  }->
+  ## make sure discourse upstart is really started
+  exec {'upstart_discourse_start':
+    command => "/usr/bin/sudo /sbin/start discourse",
+  }->
+  ### now, do some permission clean-ups
+  exec { 'permission_close_01':
+     command => '/usr/bin/sudo /bin/chmod o-w -R /usr/local/lib/ruby/gems/2.2.0/',
+  }->
+  exec { 'permission_close_02':
+     command => '/usr/bin/sudo /bin/chmod o-w /usr/local/bin',
   }
 }
