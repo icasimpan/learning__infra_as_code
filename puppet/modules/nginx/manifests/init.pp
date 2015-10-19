@@ -1,5 +1,8 @@
 # vagrant/puppet/modules/nginx/manifests/init.pp
 class nginx {
+  exec { 'apt-get update':
+    path => '/usr/bin',
+  }
   # make sure default htmldoc for nginx is present
   file { '/var/www':
     ensure => 'directory',
