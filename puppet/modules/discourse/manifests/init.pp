@@ -5,15 +5,17 @@ class discourse {
     require => Exec['apt-get update'],
   }->
   ## Get the discourse source code...
-  exec { 'gitclone_discourse':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/discourse/_workaround/get_discourse_code.pp  --modulepath=/vagrant/puppet/modules',
+  exec { 'create_discourse_loc':
+    command => '/usr/bin/sudo /bin/mkdir /opt/discourse',
+  }->
+  exec { 'make_discourse_vagrant_owned':
+    command => '/usr/bin/sudo /bin/chown vagrant:vagrant /opt/discourse',
+  }->
+  exec {'git_clone_discourse':
+    command => "/usr/bin/sudo /bin/su vagrant -c '/usr/bin/git clone https://github.com/discourse/discourse.git /opt/discourse'",
     require => Package['git'],
     creates  => '/opt/discourse/COPYRIGHT.txt',
     timeout  => '0',
-  }->
-  exec { 'ensure_discourse_source_ownerOK':
-    command => '/usr/bin/sudo /bin/chown -R vagrant:vagrant /opt/discourse',
-    tries   => '5',
   }->
 
   exec { 'temp_tweak_permission_for_jsondiscourse01':
