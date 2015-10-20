@@ -14,25 +14,34 @@ class postgres::install {
 }
 
 class postgres::config {
-  ## replace pg_hba.conf with needed createdb permission for 'vagrant'
-  ## NOTE: Using workaround
   exec { 'role_vagrant':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/pghba_copy.pp',
+    command => "/usr/bin/sudo /bin/su postgres -c '/bin/cp /vagrant/puppet/modules/postgres/files/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf'",
   }
 
   ##
   ## Add 'createdb' permission for 'vagrant'
   ##   --> sudo -u postgres createuser vagrant -s
-  ## NOTE: Using workaround
   exec { 'sudo_createuser':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/createdb_superuser_vagrant.pp',
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/createuser vagrant -s'",
   }
 
   ## 
   ## Prepare postgres for discourse installation later..
   ## 
-  exec { 'preparation_discourse_install':
-    command => '/usr/bin/sudo /usr/bin/puppet apply /vagrant/puppet/modules/postgres/_workaround/prepare_discourse.pp',
+  exec { 'prepare_pgsql_discourse01':
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/psql -c \"ALTER USER vagrant WITH PASSWORD 'password';\"'",
+  } ->
+  exec { 'prepare_pgsql_discourse02':
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/psql -c \"create database discourse_development owner vagrant encoding 'UTF8' TEMPLATE template0;\"'",
+  } ->
+  exec { 'prepare_pgsql_discourse03':
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/psql -c \"create database discourse_test owner vagrant encoding 'UTF8' TEMPLATE template0;\"'",
+  } ->
+  exec { 'prepare_pgsql_discourse04':
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/psql -d discourse_development -c \"CREATE EXTENSION hstore;\"'",
+  } ->
+  exec { 'prepare_pgsql_discourse05':
+    command => "/usr/bin/sudo /bin/su postgres -c '/usr/bin/psql -d discourse_development -c \"CREATE EXTENSION pg_trgm;\"'",
   }
 }
 
